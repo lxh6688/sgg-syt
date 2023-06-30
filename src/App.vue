@@ -2,7 +2,7 @@
   <div class="container">
     <HospitalTop />
     <div class="content">
-      内容
+      <router-view></router-view>
     </div>
     <HospitalBottom />
   </div>
