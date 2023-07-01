@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import type { HospitalResponseData } from "./type";
 
 enum API {
   HOSPITALDETAIL_URL = '/hosp/hospital/',
@@ -21,4 +22,4 @@ enum API {
 }
 
 //获取医院数据
-export const reqHospital = (page: number, limit: number) => request.get(API.HOSPITALDETAIL_URL + `${page}/${limit}`);
+export const reqHospital = (page: number, limit: number) => request.get<any, HospitalResponseData>(API.HOSPITALDETAIL_URL + `${page}/${limit}`);

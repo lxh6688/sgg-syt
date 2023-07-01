@@ -36,18 +36,19 @@ import Region from "./region/index.vue";
 import Card from "./card/index.vue";
 import { onMounted, ref } from "vue";
 import { reqHospital } from '../../api/home'
+import type { Content, HospitalResponseData } from '@/api/home/type'
  
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(10)
-let hasHospitalArr = ref([])
-let total = ref(0)
+let hasHospitalArr = ref<Content>([])
+let total = ref<number>(0)
 
 onMounted(() => {
   getHospitalInfo()
 })
 
 const getHospitalInfo = async () => {
-  let result: any = await reqHospital(pageNo.value, pageSize.value)
+  let result: HospitalResponseData = await reqHospital(pageNo.value, pageSize.value)
   if(result.code == 200){
     hasHospitalArr.value = result.data.content
     total.value = result.data.totalElements
