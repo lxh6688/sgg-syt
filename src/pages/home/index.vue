@@ -4,11 +4,12 @@
     <Search />
     <el-row gutter="20">
       <el-col :span="20">
-        <Level />
-        <Region />
-        <div class="hospital">
+        <Level @getLevel="getLevel"/>
+        <Region @getRegion="getRegion"/>
+        <div class="hospital" v-if="hasHospitalArr.length > 0">
           <Card v-for="(item, index) in hasHospitalArr" :key="index" class="item" :hospitalInfo="item" />
         </div>
+        <el-empty v-else description="暂无数据" />
 
         <el-pagination
           v-model:current-page="pageNo"
@@ -42,13 +43,20 @@ let pageNo = ref<number>(1)
 let pageSize = ref<number>(10)
 let hasHospitalArr = ref<Content>([])
 let total = ref<number>(0)
+let hostype = ref<string>("");
+let districtCode = ref<string>("");
 
 onMounted(() => {
   getHospitalInfo()
 })
 
 const getHospitalInfo = async () => {
-  let result: HospitalResponseData = await reqHospital(pageNo.value, pageSize.value)
+  let result: HospitalResponseData = await reqHospital(
+    pageNo.value,
+    pageSize.value,
+    hostype.value,
+    districtCode.value
+  );
   if(result.code == 200){
     hasHospitalArr.value = result.data.content
     total.value = result.data.totalElements
@@ -61,6 +69,15 @@ const currentChange = () => {
 
 const sizeChange = () => {
   pageNo.value = 1;
+  getHospitalInfo();
+};
+
+const getLevel = (level: string) => {
+  hostype.value = level;
+  getHospitalInfo();
+};
+const getRegion = (region: string) => {
+  districtCode.value = region;
   getHospitalInfo();
 };
 </script>

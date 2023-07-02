@@ -3,23 +3,43 @@
     <div class="content">
       <div class="left">地区:</div>
       <ul>
-        <li class="active">全部</li>
-        <li>昌平区</li>
-        <li>昌平区</li>
-        <li>昌平区</li>
-        <li>昌平区</li>
-        <li>昌平区</li>
-        <li>昌平区</li>
-        <li>昌平区</li>
-        <li>昌平区</li>
-        <li v-for="item in 10" :key="item">昌平区</li>
+        <li :class="{active:RegionFlag==''}" @click="changeRegion('')">全部</li>
+        <li v-for="item in RegionArr" :key="item.value" :class="{active:RegionFlag==item.value}" @click="changeRegion(item.value)">{{item.name}}</li>
       </ul>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { reqHospitalLevelAndRegion } from "@/api/home";
+import { onMounted, ref } from "vue";
+import type {
+  HospitalLevelAndRegionResponseData,
+  HospitalLevelAndRegionArr,
+} from "@/api/home/type";
 
+let RegionArr = ref<HospitalLevelAndRegionArr>([]);
+let RegionFlag = ref<string>('')
+
+onMounted(() => {
+  getRegion();
+});
+//获取地区的数据
+const getRegion = async () => {
+  let result: HospitalLevelAndRegionResponseData = await reqHospitalLevelAndRegion("Beijin");
+  
+  if (result.code == 200) {
+    RegionArr.value = result.data;
+  }
+};
+
+//点击不同区域按钮回调
+const changeRegion = (region:string)=>{
+  RegionFlag.value = region;
+  $emit('getRegion',region);
+}
+
+let $emit = defineEmits(['getRegion'])
 </script>
 
 <style scoped lang="scss">
@@ -29,7 +49,6 @@
   .content {
     display: flex;
     .left {
-      margin-right: 10px;
       width: 50px;
     }
     ul {

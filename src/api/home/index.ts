@@ -1,25 +1,18 @@
 import request from "@/utils/request";
-import type { HospitalResponseData } from "./type";
+import type { HospitalLevelAndRegionResponseData, HospitalResponseData } from "./type";
 
 enum API {
-  HOSPITALDETAIL_URL = '/hosp/hospital/',
-  //获取某一个医院的科室的数据
-  HOSPITALDEPARMENT_URL = '/hosp/hospital/department/',
-  //获取验证码接口
-  GETUSERCODE_URL = '/sms/send/',
-  //用户登录接口
-  USERLOGIN_URL = '/user/login',
-  //获取微信扫码登录需要参数
-  WXLOGIN_URL = '/user/weixin/getLoginParam/',
-  //获取某一个医院的某一个科室预约挂号数据
-  HOSPITALWORK_URL = '/hosp/hospital/auth/getBookingScheduleRule/',
-  //获取医院某一个科室某一天相应医生排班的数据
-  HOSPITALDOCTOR_URL = '/hosp/hospital/auth/findScheduleList/',
-  //获取某一个账号下就诊人的信息
-  GETUSER_URL = '/user/patient/auth/findAll',
-  //获取挂号医生的信息e
-  GETDOCTOR_URL='/hosp/hospital/getSchedule/'
+  //获取已有的医院的数据接口地址
+  HOSPITAL_URL = '/hosp/hospital/',
+  //获取医院的等级与地区接口
+  HOSPITALLEVElANDREGION_URL = '/cmn/dict/findByDictCode/',
+  //根据关键字医院的名字获取数据
+  HOSPITALINFO_URL = '/hosp/hospital/findByHosname/'
 }
 
 //获取医院数据
-export const reqHospital = (page: number, limit: number) => request.get<any, HospitalResponseData>(API.HOSPITALDETAIL_URL + `${page}/${limit}`);
+export const reqHospital = (page: number, limit: number, hostype = '', districtCode = '') => 
+  request.get<any, HospitalResponseData>(API.HOSPITAL_URL + `${page}/${limit}?hostype=${hostype}&districtCode=${districtCode}`);
+//获取医院的等级或者获取医院地区的数据
+export const reqHospitalLevelAndRegion = (dictCode: string) => 
+  request.get<any, HospitalLevelAndRegionResponseData>(API.HOSPITALLEVElANDREGION_URL + dictCode);
