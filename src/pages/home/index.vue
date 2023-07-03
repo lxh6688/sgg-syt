@@ -23,7 +23,7 @@
         />
       </el-col>
       <el-col :span="4">
-        右侧
+        <Tip />
       </el-col>
     </el-row>
   </div>
@@ -35,6 +35,7 @@ import Search from "./search/index.vue";
 import Level from "./level/index.vue";
 import Region from "./region/index.vue";
 import Card from "./card/index.vue";
+import Tip from "./tip/index.vue";
 import { onMounted, ref } from "vue";
 import { reqHospital } from '../../api/home'
 import type { Content, HospitalResponseData } from '@/api/home/type'
