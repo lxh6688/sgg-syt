@@ -2,7 +2,7 @@
   <div>
     <Carousel />
     <Search />
-    <el-row gutter="20">
+    <el-row :gutter="20">
       <el-col :span="20">
         <Level @getLevel="getLevel"/>
         <Region @getRegion="getRegion"/>
