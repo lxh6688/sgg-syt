@@ -5,17 +5,11 @@
       <router-view></router-view>
     </div>
     <HospitalBottom />
+    <Login/>
   </div>
 </template>
 
 <script setup lang="ts">
-import request from '@/utils/request';
-import { onMounted } from 'vue';
-onMounted(() => {
-  request.get('/hosp/hospital/1/10').then((res) => {
-    console.log(res)
-  })
-})
 
 </script>
 
