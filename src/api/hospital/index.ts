@@ -27,3 +27,5 @@ export const reqHospitalDetail = (hoscode: string) =>
 //获取医院科室的接口
 export const reqHospitalDeparment = (hoscode: string) => 
     request.get<any, DeparmentResponseData>(API.HOSPITALDEPARMENT_URL + hoscode);
+//获取验证码接口
+export const reqCode = (phone: string) => request.get<any, any>(API.GETUSERCODE_URL + phone);

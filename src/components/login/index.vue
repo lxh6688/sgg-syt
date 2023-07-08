@@ -5,25 +5,27 @@
       <el-row>
         <!-- 左侧解构:收集号码登录、微信扫一扫登录 -->
         <el-col :span="12">
-          <div class="login">
+          <div class="login" v-show="scene == 0">
             <div>
               <el-form ref="form">
                 <el-form-item prop="phone">
                   <el-input
                     placeholder="请你输入手机号码"
                     :prefix-icon="User"
+                    v-model="loginParam.phone"
                   ></el-input>
                 </el-form-item>
                 <el-form-item prop="code">
                   <el-input
                     placeholder="请输入手机验证码"
                     :prefix-icon="Lock"
+                    v-model="loginParam.code"
                   ></el-input>
                 </el-form-item>
                 <el-form-item>
-                  <el-button :disabled="!isPhone || flag ? true : false">
-                    <!-- <CountDown v-if="flag" :flag="flag" @getFlag="getFlag" /> -->
-                    <span>获取验证码</span>
+                  <el-button :disabled="!isPhone || flag">
+                    <CountDown v-if="flag" :flag="flag" @getFlag="getFlag" />
+                    <span v-else @click="getCode">获取验证码</span>
                   </el-button>
                 </el-form-item>
               </el-form>
@@ -31,9 +33,10 @@
                 style="width: 100%"
                 type="primary"
                 size="default"
+                :disabled="!isPhone"
                 >用户登录</el-button
               >
-              <div class="bottom">
+              <div class="bottom" @click="changeScene">
                 <p>微信扫码登录</p>
                 <svg
                   t="1685263287521"
@@ -149,7 +152,45 @@
 <script setup lang="ts">
 import { User, Lock } from "@element-plus/icons-vue";
 import useUserStore from '@/store/modules/user';
+import { computed, reactive, ref } from "vue";
+//@ts-ignore
+import { ElMessage } from "element-plus";
+import CountDown from '@/components/countDown/index.vue'
+
 let userStore = useUserStore()
+let scene = ref<number>(0); //0代表收集号码登录  如果是1 微信扫码登录
+let loginParam = reactive({
+  phone: "", 
+  code: "",
+});
+let flag = ref<boolean>(false);
+
+let isPhone = computed(() => {
+  const reg = /^1((34[0-8])|(8\d{2})|(([35][0-35-9]|4[579]|66|7[35678]|9[1389])\d{1}))\d{7}$/;
+  return reg.test(loginParam.phone);
+});
+
+const changeScene = () => {
+  scene.value = 1
+}
+const getCode = async () => {
+  if (!isPhone.value || flag.value) return;
+  flag.value = true;
+  try {
+    //获取验证码成功
+    await userStore.getCode(loginParam.phone);
+    loginParam.code = userStore.code;
+  } catch (error) {
+    ElMessage({
+      type: "error",
+      message: (error as Error).message,
+    });
+  }
+}
+const getFlag = (val: boolean) => {
+  //倒计时模式结束
+  flag.value = val;
+}
 </script>
 
 <style lang="scss" scoped>
