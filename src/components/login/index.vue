@@ -1,13 +1,11 @@
 <template>
-  <div>
   <div class="login_container">
     <el-dialog v-model="userStore.visiable" title="用户登录" ref="dialog">
       <el-row>
-        <!-- 左侧解构:收集号码登录、微信扫一扫登录 -->
         <el-col :span="12">
-          <div class="login" v-show="scene == 0">
-            <div>
-              <el-form ref="form" :model="loginParam" :rules="rules">
+          <div class="login">
+            <div v-show="scene == 0">
+              <el-form :model="loginParam" :rules="rules" ref="form">
                 <el-form-item prop="phone">
                   <el-input
                     placeholder="请你输入手机号码"
@@ -23,7 +21,7 @@
                   ></el-input>
                 </el-form-item>
                 <el-form-item>
-                  <el-button :disabled="!isPhone || flag">
+                  <el-button :disabled="!isPhone || flag ? true : false">
                     <CountDown v-if="flag" :flag="flag" @getFlag="getFlag" />
                     <span v-else @click="getCode">获取验证码</span>
                   </el-button>
@@ -33,7 +31,7 @@
                 style="width: 100%"
                 type="primary"
                 size="default"
-                :disabled="!isPhone || loginParam.code.length < 6"
+                :disabled="!isPhone || loginParam.code.length < 6 ? true : false"
                 @click="login"
                 >用户登录</el-button
               >
@@ -62,10 +60,10 @@
                 </svg>
               </div>
             </div>
-            <div class="webchat">
+            <div class="webchat" v-show="scene == 1">
               <!-- 在这个容器当中显示微信扫码登录页面 -->
               <div id="login_container"></div>
-              <div class="phone">
+              <div class="phone" @click="handler">
                 <p>手机短信验证码登录</p>
                 <svg
                   t="1685676069573"
@@ -147,7 +145,6 @@
       </template>
     </el-dialog>
   </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -156,7 +153,9 @@ import useUserStore from '@/store/modules/user';
 import { computed, reactive, ref } from "vue";
 //@ts-ignore
 import { ElMessage } from "element-plus";
-import CountDown from '@/components/countDown/index.vue'
+import CountDown from '@/components/countDown/index.vue';
+import { reqWxLogin } from "@/api/hospital";
+import { WXLoginResponseData } from "@/api/hospital/type";
 
 let userStore = useUserStore()
 let scene = ref<number>(0); //0代表收集号码登录  如果是1 微信扫码登录
@@ -172,8 +171,22 @@ let isPhone = computed(() => {
   return reg.test(loginParam.phone);
 });
 
-const changeScene = () => {
+const changeScene = async () => {
   scene.value = 1
+  let redirect_URL = encodeURIComponent(window.location.origin + "/wxlogin");
+  let result: WXLoginResponseData = await reqWxLogin(redirect_URL);
+  //生成微信扫码登录二维码页面
+  //@ts-ignore
+  new WxLogin({
+    self_redirect: true, //true:手机点击确认登录后可以在 iframe 内跳转到 redirect_uri
+    id: "login_container", //显示二维码容器设置
+    appid: result.data.appid, //应用位置标识appid
+    scope: "snsapi_login", //当前微信扫码登录页面已经授权了
+    redirect_uri: result.data.redirectUri, //填写授权回调域路径,就是用户授权成功以后，微信服务器向公司后台推送code地址
+    state: result.data.state, //state就是学校服务器重定向的地址携带用户信息
+    style: "black",
+    href: "",
+  });
 }
 const getCode = async () => {
   if (!isPhone.value || flag.value) return;
@@ -236,6 +249,10 @@ const rules = {
 
 const closeDialog = () => {
   userStore.visiable = false;
+};
+
+const handler = () => {
+  scene.value = 0;
 };
 </script>
 
