@@ -44,6 +44,11 @@ const goHome = () => {
 const login = () => {
   userStore.visiable = true
 }
+
+const logout = () => {
+  userStore.logout();
+  $router.push({ path: "/home" });
+};
 </script>
 
 <style scoped lang="scss">
