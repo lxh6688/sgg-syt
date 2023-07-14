@@ -7,7 +7,7 @@
         <el-col :span="12">
           <div class="login" v-show="scene == 0">
             <div>
-              <el-form ref="form">
+              <el-form ref="form" :model="loginParam" :rules="rules">
                 <el-form-item prop="phone">
                   <el-input
                     placeholder="请你输入手机号码"
@@ -143,7 +143,7 @@
         </el-col>
       </el-row>
       <template #footer>
-        <el-button type="primary" size="default">关闭窗口</el-button>
+        <el-button type="primary" size="default" @click="closeDialog">关闭窗口</el-button>
       </template>
     </el-dialog>
   </div>
@@ -160,6 +160,7 @@ import CountDown from '@/components/countDown/index.vue'
 
 let userStore = useUserStore()
 let scene = ref<number>(0); //0代表收集号码登录  如果是1 微信扫码登录
+let form = ref<any>();
 let loginParam = reactive({
   phone: "", 
   code: "",
@@ -193,6 +194,7 @@ const getFlag = (val: boolean) => {
 }
 
 const login = async () => {
+  await form.value.validate();
   try {
     await userStore.userLogin(loginParam);
     userStore.visiable = false;
@@ -209,6 +211,32 @@ const login = async () => {
     });
   }
 }
+
+const validatorPhone = (rule: any, value: any, callBack: any) => {
+  const reg = /^1((34[0-8])|(8\d{2})|(([35][0-35-9]|4[579]|66|7[35678]|9[1389])\d{1}))\d{7}$/;
+  if (reg.test(value)) {
+    callBack();
+  } else {
+    callBack(new Error("请输入正确的手机号码格式"));
+  }
+};
+//验证码自定义校验规则
+const validatorCode = (rule: any, value: any, callBack: any) => {
+  if (/^\d{6}$/.test(value)) {
+    callBack();
+  } else {
+    callBack(new Error("请输入正确的验证码格式"));
+  }
+};
+
+const rules = {
+  phone: [{ trigger: "change", validator: validatorPhone }],
+  code: [{ trigger: "change", validator: validatorCode }],
+};
+
+const closeDialog = () => {
+  userStore.visiable = false;
+};
 </script>
 
 <style lang="scss" scoped>
