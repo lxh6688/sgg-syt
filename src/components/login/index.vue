@@ -33,7 +33,8 @@
                 style="width: 100%"
                 type="primary"
                 size="default"
-                :disabled="!isPhone"
+                :disabled="!isPhone || loginParam.code.length < 6"
+                @click="login"
                 >用户登录</el-button
               >
               <div class="bottom" @click="changeScene">
@@ -188,8 +189,25 @@ const getCode = async () => {
   }
 }
 const getFlag = (val: boolean) => {
-  //倒计时模式结束
   flag.value = val;
+}
+
+const login = async () => {
+  try {
+    await userStore.userLogin(loginParam);
+    userStore.visiable = false;
+    // let redirect = $route.query.redirect;
+    // if(redirect){
+    //   $router.push(redirect as string);
+    // }else{
+    //   $router.push('/home');
+    // }
+  } catch (error) {
+    ElMessage({
+      type: "error",
+      message: (error as Error).message,
+    });
+  }
 }
 </script>
 

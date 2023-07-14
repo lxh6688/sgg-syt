@@ -8,6 +8,6 @@ export interface DetailState {
 //用户仓库相关state数据的ts类型定义
 export interface UserState {
     visiable: boolean,//用于控制登录组件的dialog显示与隐藏
-    code: string,//存储用户的验证码
+    code: string,//存储用户的验证码 
     userInfo: UserInfo
 }
