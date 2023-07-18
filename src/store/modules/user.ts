@@ -37,6 +37,15 @@ const useUserStore = defineStore('User', {
       this.userInfo = { name: '', token: '' };
       REMOVE_TOKEN();
     },
+    queryState() {
+      let timer = setInterval(() => {
+        if (GET_TOKEN()) {
+            this.visiable = false;
+            this.userInfo = JSON.parse(GET_TOKEN() as string);
+            clearInterval(timer);
+        }
+      }, 1000);
+  }
   },
   getters: {
 

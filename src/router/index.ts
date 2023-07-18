@@ -17,6 +17,10 @@ export default createRouter({
       }
     },
     {
+      path: '/wxlogin',
+      component: () => import('@/pages/wxlogin/index.vue')
+    },
+    {
       path: '/hospital',
       component: () => import('@/pages/hospital/index.vue'),
       children: [

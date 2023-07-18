@@ -150,7 +150,7 @@
 <script setup lang="ts">
 import { User, Lock } from "@element-plus/icons-vue";
 import useUserStore from '@/store/modules/user';
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 //@ts-ignore
 import { ElMessage } from "element-plus";
 import CountDown from '@/components/countDown/index.vue';
@@ -254,6 +254,12 @@ const closeDialog = () => {
 const handler = () => {
   scene.value = 0;
 };
+
+watch(() => scene.value, (val:number) => {
+  if(val === 1){
+    userStore.queryState()
+  }
+})
 </script>
 
 <style lang="scss" scoped>
